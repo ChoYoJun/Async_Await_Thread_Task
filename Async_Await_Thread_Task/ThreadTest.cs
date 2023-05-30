@@ -187,10 +187,12 @@ namespace Async_Await_Thread_Task
                 {
                     MessageBox.Show("task1");
                 }, System.Threading.Tasks.TaskCreationOptions.AttachedToParent); //建立了父子关系。。。 父任务想要继续执行，必须等待子任务执行完毕。。。。
+                task1.Start();
                 Task task2 = new Task(() =>
                 {
                     MessageBox.Show("task2");
                 }, System.Threading.Tasks.TaskCreationOptions.AttachedToParent);
+                task2.Start();
             });
             task.Start();
             task.Wait();//task.WaitAll(task1,task2);
@@ -216,5 +218,88 @@ namespace Async_Await_Thread_Task
             task.Wait();  //task.WaitAll(task1,task2);
             MessageBox.Show("task");
         }
+
+        private void ExecuteSync_Click(object sender, EventArgs e) //task2 用 task1的线程去执行，防止线程切换
+        {
+            Task task1 = new Task(() =>
+            {
+                Thread.Sleep(1000);
+                MessageBox.Show("task1 tid=" + Thread.CurrentThread.ManagedThreadId.ToString() +"    "+ DateTime.Now.ToString());
+            });
+            var task2 = task1.ContinueWith(t =>
+            {
+                MessageBox.Show("task2 tid=" + Thread.CurrentThread.ManagedThreadId.ToString() +"    " + DateTime.Now.ToString());
+            },TaskContinuationOptions.ExecuteSynchronously);
+            task1.Start();
+        }
+
+        private void NotOnRanToCompletion_Click(object sender, EventArgs e)//在前面的task未完成时候才执行
+        {
+            Task task1 = new Task(() =>
+            {
+                Thread.Sleep(1000);
+                MessageBox.Show("task1 id = " + Thread.CurrentThread.ManagedThreadId.ToString() + "     " + DateTime.Now.ToString());
+            });
+            var task2 = task1.ContinueWith(t =>
+            {
+                MessageBox.Show("task2 id = " + Thread.CurrentThread.ManagedThreadId.ToString() + "     " + DateTime.Now.ToString());
+            }, TaskContinuationOptions.NotOnRanToCompletion);
+            task1.Start();
+        }
+
+        private void OnlyOnRanToCompletion_Click(object sender, EventArgs e)//在前面的task完成之后才能执行
+        {
+            Task task1 = new Task(() =>
+            {
+                Thread.Sleep(1000);
+                MessageBox.Show("task1 id = " + Thread.CurrentThread.ManagedThreadId.ToString() + "     " + DateTime.Now.ToString());
+            });
+            var task2 = task1.ContinueWith(t =>
+            {
+                MessageBox.Show("task2 id = " + Thread.CurrentThread.ManagedThreadId.ToString() + "     " + DateTime.Now.ToString());
+            }, TaskContinuationOptions.OnlyOnRanToCompletion);
+            task1.Start();
+        }
+
+        private void CancellationTokenSource_Click(object sender, EventArgs e) //任务取消
+        {
+            CancellationTokenSource source = new CancellationTokenSource();
+            source.Token.Register(() =>
+            {
+                //如果当前的token被取消，此函数将会被执行
+                MessageBox.Show("当前的source已经被取消，现在可以做资源清理了");
+            });
+            var task = Task.Factory.StartNew(() =>
+            {
+                while (!source.IsCancellationRequested)
+                {  
+                    Thread.Sleep(1000);
+                    MessageBox.Show("当前thread = " + Thread.CurrentThread.ManagedThreadId.ToString());
+                }
+            }, source.Token);
+            Thread.Sleep(2000);
+            source.Cancel();
+        }
+
+        private void CancelAfter_Click(object sender, EventArgs e)//任务延时取消
+        {
+            CancellationTokenSource source = new CancellationTokenSource();
+            source.CancelAfter(1000);
+            source.Token.Register(() =>
+            {
+                //如果当前的token被取消，此函数将会被执行
+                MessageBox.Show("当前的source已经被取消，现在可以做资源清理了");
+            });
+            var task = Task.Factory.StartNew(() =>
+            {
+                MessageBox.Show("当前开始的thread = " + Thread.CurrentThread.ManagedThreadId.ToString());
+                while (!source.IsCancellationRequested)
+                {
+                    Thread.Sleep(1000);
+                }
+            }, source.Token);
+            source.CancelAfter(1000);
+        }
+
     }
 }
