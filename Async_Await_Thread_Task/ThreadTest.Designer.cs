@@ -57,6 +57,10 @@
             this.CancellationTokenSource = new System.Windows.Forms.Button();
             this.CancelAfter = new System.Windows.Forms.Button();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.CancelMultiTasks1 = new System.Windows.Forms.Button();
+            this.CancelMultiTasks2 = new System.Windows.Forms.Button();
+            this.parallel = new System.Windows.Forms.Button();
+            this.parallelForEach = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -173,16 +177,16 @@
             this.groupBox2.Controls.Add(this.TaskCreationOptions);
             this.groupBox2.Controls.Add(this.groupBox5);
             this.groupBox2.Controls.Add(this.groupBox4);
-            this.groupBox2.Location = new System.Drawing.Point(417, 12);
+            this.groupBox2.Location = new System.Drawing.Point(397, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(677, 592);
+            this.groupBox2.Size = new System.Drawing.Size(470, 602);
             this.groupBox2.TabIndex = 10;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Task = Thread + ThreadPool + 优化功能";
             // 
             // DenyChildAttach
             // 
-            this.DenyChildAttach.Location = new System.Drawing.Point(23, 342);
+            this.DenyChildAttach.Location = new System.Drawing.Point(221, 225);
             this.DenyChildAttach.Name = "DenyChildAttach";
             this.DenyChildAttach.Size = new System.Drawing.Size(180, 36);
             this.DenyChildAttach.TabIndex = 14;
@@ -192,7 +196,7 @@
             // 
             // TaskCreationOptions
             // 
-            this.TaskCreationOptions.Location = new System.Drawing.Point(23, 300);
+            this.TaskCreationOptions.Location = new System.Drawing.Point(221, 183);
             this.TaskCreationOptions.Name = "TaskCreationOptions";
             this.TaskCreationOptions.Size = new System.Drawing.Size(180, 36);
             this.TaskCreationOptions.TabIndex = 13;
@@ -315,7 +319,7 @@
             this.groupBox6.Controls.Add(this.OnlyOnRanToCompletion);
             this.groupBox6.Controls.Add(this.NotOnRanToCompletion);
             this.groupBox6.Controls.Add(this.ExecuteSync);
-            this.groupBox6.Location = new System.Drawing.Point(11, 398);
+            this.groupBox6.Location = new System.Drawing.Point(11, 294);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(204, 167);
             this.groupBox6.TabIndex = 16;
@@ -364,20 +368,64 @@
             // 
             // groupBox7
             // 
+            this.groupBox7.Controls.Add(this.CancelMultiTasks2);
             this.groupBox7.Controls.Add(this.CancelAfter);
             this.groupBox7.Controls.Add(this.CancellationTokenSource);
-            this.groupBox7.Location = new System.Drawing.Point(221, 398);
+            this.groupBox7.Controls.Add(this.CancelMultiTasks1);
+            this.groupBox7.Location = new System.Drawing.Point(221, 294);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(238, 136);
+            this.groupBox7.Size = new System.Drawing.Size(238, 226);
             this.groupBox7.TabIndex = 20;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "CancelSource";
+            // 
+            // CancelMultiTasks1
+            // 
+            this.CancelMultiTasks1.Location = new System.Drawing.Point(12, 128);
+            this.CancelMultiTasks1.Name = "CancelMultiTasks1";
+            this.CancelMultiTasks1.Size = new System.Drawing.Size(212, 36);
+            this.CancelMultiTasks1.TabIndex = 4;
+            this.CancelMultiTasks1.Text = "CancelMultiTasks例子1";
+            this.CancelMultiTasks1.UseVisualStyleBackColor = true;
+            this.CancelMultiTasks1.Click += new System.EventHandler(this.CancelMultiTasks1_Click);
+            // 
+            // CancelMultiTasks2
+            // 
+            this.CancelMultiTasks2.Location = new System.Drawing.Point(12, 171);
+            this.CancelMultiTasks2.Name = "CancelMultiTasks2";
+            this.CancelMultiTasks2.Size = new System.Drawing.Size(212, 36);
+            this.CancelMultiTasks2.TabIndex = 12;
+            this.CancelMultiTasks2.Text = "CancelMultiTasks例子2";
+            this.CancelMultiTasks2.UseVisualStyleBackColor = true;
+            this.CancelMultiTasks2.Click += new System.EventHandler(this.CancelMultiTasks2_Click);
+            // 
+            // parallel
+            // 
+            this.parallel.Location = new System.Drawing.Point(929, 57);
+            this.parallel.Name = "parallel";
+            this.parallel.Size = new System.Drawing.Size(137, 36);
+            this.parallel.TabIndex = 4;
+            this.parallel.Text = "Parallel";
+            this.parallel.UseVisualStyleBackColor = true;
+            this.parallel.Click += new System.EventHandler(this.Parallel_Click);
+            // 
+            // parallelForEach
+            // 
+            this.parallelForEach.Location = new System.Drawing.Point(929, 110);
+            this.parallelForEach.Name = "parallelForEach";
+            this.parallelForEach.Size = new System.Drawing.Size(137, 36);
+            this.parallelForEach.TabIndex = 12;
+            this.parallelForEach.Text = "parallelForEach";
+            this.parallelForEach.UseVisualStyleBackColor = true;
+            this.parallelForEach.Click += new System.EventHandler(this.parallelForEach_Click);
             // 
             // ThreadTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1209, 626);
+            this.ClientSize = new System.Drawing.Size(1382, 626);
+            this.Controls.Add(this.parallelForEach);
+            this.Controls.Add(this.parallel);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -427,5 +475,9 @@
         private System.Windows.Forms.Button CancellationTokenSource;
         private System.Windows.Forms.Button CancelAfter;
         private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.Button CancelMultiTasks1;
+        private System.Windows.Forms.Button CancelMultiTasks2;
+        private System.Windows.Forms.Button parallel;
+        private System.Windows.Forms.Button parallelForEach;
     }
 }

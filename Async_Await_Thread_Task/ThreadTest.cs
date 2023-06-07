@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -179,6 +180,7 @@ namespace Async_Await_Thread_Task
 
         #endregion
 
+        #region //Task的一些操作
         private void TaskCreationOptions_Click(object sender, EventArgs e)
         {
             Task task = new Task(() =>
@@ -300,6 +302,102 @@ namespace Async_Await_Thread_Task
             }, source.Token);
             source.CancelAfter(1000);
         }
+        int workThreadNums = 0;
+        bool isStop = false;
+        private void CancelMultiTasks1_Click(object sender, EventArgs e)//开启10个线程并等待线程全部结束才取消task
+        {
+            //此方法比较low，用了workThreadNums和isStop的局部变量
+            var tasks = new Task[10];
+            for (int i = 0; i < 10; i++) //开启10个线程
+            {
+                tasks[i] = Task.Factory.StartNew((obj) =>
+                {
+                    Run();
+                }, i);
+            }
+            Thread.Sleep(1000);
+            isStop = true;
+            while (workThreadNums !=0)
+            {
+                MessageBox.Show("Waitting Threads finish, there are " + workThreadNums.ToString() + " " + "Threads running");
+                Thread.Sleep(10);
+            }
+            MessageBox.Show("ready to sign out");
+        }
+        void Run()
+        {
+            try
+            {
+                workThreadNums++;
+                while (true)
+                {
+                    if (isStop) break;
+                    Thread.Sleep(1000);
+                    //执行业务逻辑
+                    MessageBox.Show("Thread id " + Thread.CurrentThread.ManagedThreadId.ToString());
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                workThreadNums--;
+            }
+        }
 
+        private void CancelMultiTasks2_Click(object sender, EventArgs e)
+        {
+            CancellationTokenSource source = new CancellationTokenSource();
+            var tasks = new Task[10];
+            for (int i = 0; i < 10; i++)
+            {
+                tasks[i] = Task.Factory.StartNew((m) =>
+                {
+                    Run2(source.Token);
+                }, i);
+            }
+
+            Task.WhenAll(tasks).ContinueWith((t) =>  //将所有的task串联到whenAll上
+            {
+                MessageBox.Show("ready to sign out!");
+            });
+
+            Thread.Sleep(2000);
+            source.Cancel();
+
+        }
+        void Run2(CancellationToken token)
+        {
+            while (true)
+            {
+                if (token.IsCancellationRequested) break;
+                Thread.Sleep(1000);
+                MessageBox.Show("Thread id : " + Thread.CurrentThread.ManagedThreadId.ToString());
+            }
+        }
+        #endregion
+        private void Parallel_Click(object sender, EventArgs e)//并行计算
+        {
+            Parallel.For(0, 100, (item) =>
+            {
+                MessageBox.Show(item.ToString());
+            });
+        }
+
+        private void parallelForEach_Click(object sender, EventArgs e)
+        {
+            Dictionary<int, int> dic = new Dictionary<int, int>()
+            {
+                {1, 100},
+                {2, 200},
+                {3, 300},
+            };
+            Parallel.ForEach(dic, (item) =>
+            {
+                MessageBox.Show(item.Key.ToString());
+            });
+        }//Parallel.ForEach对应 一些集合运算
     }
 }
